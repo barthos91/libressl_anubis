@@ -1,0 +1,49 @@
+rc4/libcrypto_la-rc4_enc.lo: rc4/rc4_enc.c /usr/include/stdc-predef.h \
+ ../include/machine/endian.h /usr/include/endian.h \
+ /usr/include/features.h /usr/include/i386-linux-gnu/sys/cdefs.h \
+ /usr/include/i386-linux-gnu/bits/wordsize.h \
+ /usr/include/i386-linux-gnu/gnu/stubs.h \
+ /usr/include/i386-linux-gnu/gnu/stubs-32.h \
+ /usr/include/i386-linux-gnu/bits/endian.h \
+ /usr/include/i386-linux-gnu/bits/byteswap.h \
+ /usr/include/i386-linux-gnu/bits/types.h \
+ /usr/include/i386-linux-gnu/bits/typesizes.h \
+ /usr/include/i386-linux-gnu/bits/byteswap-16.h ../include/openssl/rc4.h \
+ ../include/openssl/opensslconf.h ../include/openssl/opensslfeatures.h \
+ /usr/lib/gcc/i686-linux-gnu/4.8/include/stddef.h rc4/rc4_locl.h
+
+/usr/include/stdc-predef.h:
+
+../include/machine/endian.h:
+
+/usr/include/endian.h:
+
+/usr/include/features.h:
+
+/usr/include/i386-linux-gnu/sys/cdefs.h:
+
+/usr/include/i386-linux-gnu/bits/wordsize.h:
+
+/usr/include/i386-linux-gnu/gnu/stubs.h:
+
+/usr/include/i386-linux-gnu/gnu/stubs-32.h:
+
+/usr/include/i386-linux-gnu/bits/endian.h:
+
+/usr/include/i386-linux-gnu/bits/byteswap.h:
+
+/usr/include/i386-linux-gnu/bits/types.h:
+
+/usr/include/i386-linux-gnu/bits/typesizes.h:
+
+/usr/include/i386-linux-gnu/bits/byteswap-16.h:
+
+../include/openssl/rc4.h:
+
+../include/openssl/opensslconf.h:
+
+../include/openssl/opensslfeatures.h:
+
+/usr/lib/gcc/i686-linux-gnu/4.8/include/stddef.h:
+
+rc4/rc4_locl.h:
