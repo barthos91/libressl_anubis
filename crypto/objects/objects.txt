@@ -1315,14 +1315,22 @@ brainpool 1 14 : brainpoolP512t1
 			: ChaCha		: chacha
 			
 			
-!Alias anubis nistAlgorithms 91			
+#!Alias anubis nistAlgorithms 91			
 #ANUBIS
-anubis 1                : ANUBIS-128-CBC         : anubis-128-cbc
-anubis 2                : ANUBIS-160-CBC         : anubis-160-cbc 
-anubis 3                : ANUBIS-192-CBC         : anubis-192-cbc 
-anubis 4                : ANUBIS-224-CBC         : anubis-224-cbc 
-anubis 5                : ANUBIS-256-CBC         : anubis-256-cbc
-anubis 6                : ANUBIS-288-CBC         : anubis-288-cbc 
-anubis 7                : ANUBIS-320-CBC         : anubis-320-cbc 
+#anubis 1                : ANUBIS-128-CBC         : anubis-128-cbc
+#anubis 2                : ANUBIS-160-CBC         : anubis-160-cbc 
+#anubis 3                : ANUBIS-192-CBC         : anubis-192-cbc 
+#anubis 4                : ANUBIS-224-CBC         : anubis-224-cbc 
+#anubis 5                : ANUBIS-256-CBC         : anubis-256-cbc
+#anubis 6                : ANUBIS-288-CBC         : anubis-288-cbc 
+#anubis 7                : ANUBIS-320-CBC         : anubis-320-cbc 
 
 
+
+                 : ANUBIS-128-CBC         : anubis-128-cbc
+                : ANUBIS-160-CBC         : anubis-160-cbc
+                : ANUBIS-192-CBC         : anubis-192-cbc 
+                : ANUBIS-224-CBC         : anubis-224-cbc 
+                : ANUBIS-256-CBC         : anubis-256-cbc
+                : ANUBIS-288-CBC         : anubis-288-cbc 
+                : ANUBIS-320-CBC         : anubis-320-cbc

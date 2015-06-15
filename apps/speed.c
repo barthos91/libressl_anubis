@@ -323,6 +323,18 @@ speed_main(int argc, char **argv)
 		0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12,
 		0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34,
 		0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34, 0x56};
+	static const unsigned char akey36[36] =
+	{0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
+		0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12,
+		0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34,
+		0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34, 0x56,
+		0x78, 0x9a, 0xbc, 0xde,};
+	static const unsigned char akey40[40] =
+	{0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
+		0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12,
+		0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34,
+		0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34, 0x56,
+		0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34, 0x56};
 #endif
 #ifndef OPENSSL_NO_CAMELLIA
 	static const unsigned char ckey24[24] =
@@ -357,7 +369,7 @@ speed_main(int argc, char **argv)
 	AES_KEY aes_ks1, aes_ks2, aes_ks3;
 #endif
 #ifndef OPENSSL_NO_ANUBIS
-	NESSIEstruct anubis_ks1, anubis_ks2, anubis_ks3, anubis_ks4, anubis_ks5;
+	NESSIEstruct anubis_ks1, anubis_ks2, anubis_ks3, anubis_ks4, anubis_ks5, anubis_ks6, anubis_ks7;
 #endif
 #ifndef OPENSSL_NO_CAMELLIA
 	CAMELLIA_KEY camellia_ks1, camellia_ks2, camellia_ks3;
@@ -397,6 +409,8 @@ speed_main(int argc, char **argv)
 #define D_CBC_192_ANUBIS   32
 #define D_CBC_224_ANUBIS   33
 #define D_CBC_256_ANUBIS   34
+#define D_CBC_288_ANUBIS   35
+#define D_CBC_320_ANUBIS   36
 	double d = 0.0;
 	long c[ALGOR_NUM][SIZE_NUM];
 #define	R_DSA_512	0
@@ -716,6 +730,10 @@ speed_main(int argc, char **argv)
 			doit[D_CBC_224_ANUBIS] = 1;
 		else if (strcmp(*argv, "anubis-256-cbc") == 0)
 			doit[D_CBC_256_ANUBIS] = 1;
+		else if (strcmp(*argv, "anubis-288-cbc") == 0)
+			doit[D_CBC_288_ANUBIS] = 1;
+		else if (strcmp(*argv, "anubis-320-cbc") == 0)
+			doit[D_CBC_320_ANUBIS] = 1;
 		else
 #endif
 #ifndef OPENSSL_NO_CAMELLIA
@@ -815,6 +833,8 @@ speed_main(int argc, char **argv)
 			doit[D_CBC_192_ANUBIS] = 1;
 			doit[D_CBC_224_ANUBIS] = 1;
 			doit[D_CBC_256_ANUBIS] = 1;
+			doit[D_CBC_288_ANUBIS] = 1;
+			doit[D_CBC_320_ANUBIS] = 1;
 		} else
 #endif
 #ifndef OPENSSL_NO_CAMELLIA
@@ -969,7 +989,7 @@ speed_main(int argc, char **argv)
 			BIO_printf(bio_err, "aes-128-ige aes-192-ige aes-256-ige ");
 #endif
 #ifndef OPENSSL_NO_ANUBIS
-			BIO_printf(bio_err, "anubis-128-cbc anubis-160-cbc anubis-192-cbc anubis-224-cbc anubis-256-cbc ");
+			BIO_printf(bio_err, "anubis-128-cbc anubis-160-cbc anubis-192-cbc anubis-224-cbc anubis-256-cbc anubis-288-cbc anubis-320-cbc ");
 #endif
 #ifndef OPENSSL_NO_CAMELLIA
 			BIO_printf(bio_err, "\n");
@@ -1105,6 +1125,8 @@ speed_main(int argc, char **argv)
 	NESSIEkeysetup(akey24,192,&anubis_ks3);
 	NESSIEkeysetup(akey28,224,&anubis_ks4);
 	NESSIEkeysetup(akey32,256,&anubis_ks5);
+	NESSIEkeysetup(akey36,288,&anubis_ks6);
+	NESSIEkeysetup(akey40,320,&anubis_ks7);
 	//~ TO DO ??? add other
 #endif
 #ifndef OPENSSL_NO_CAMELLIA
@@ -1446,6 +1468,30 @@ speed_main(int argc, char **argv)
 				    iv, ANUBIS_ENCRYPT);
 			d = Time_F(STOP);
 			print_result(D_CBC_256_ANUBIS, j, count, d);
+		}
+	}
+	if (doit[D_CBC_288_ANUBIS]) {
+		for (j = 0; j < SIZE_NUM; j++) {
+			print_message(names[D_CBC_288_ANUBIS], c[D_CBC_288_ANUBIS][j], lengths[j]);
+			Time_F(START);
+			for (count = 0, run = 1; COND(c[D_CBC_288_ANUBIS][j]); count++)
+				ANUBIS_cbc_encrypt(buf, buf,
+				    (unsigned long) lengths[j], &anubis_ks6,
+				    iv, ANUBIS_ENCRYPT);
+			d = Time_F(STOP);
+			print_result(D_CBC_288_ANUBIS, j, count, d);
+		}
+	}
+	if (doit[D_CBC_320_ANUBIS]) {
+		for (j = 0; j < SIZE_NUM; j++) {
+			print_message(names[D_CBC_320_ANUBIS], c[D_CBC_320_ANUBIS][j], lengths[j]);
+			Time_F(START);
+			for (count = 0, run = 1; COND(c[D_CBC_320_ANUBIS][j]); count++)
+				ANUBIS_cbc_encrypt(buf, buf,
+				    (unsigned long) lengths[j], &anubis_ks7,
+				    iv, ANUBIS_ENCRYPT);
+			d = Time_F(STOP);
+			print_result(D_CBC_320_ANUBIS, j, count, d);
 		}
 	}
 #endif
