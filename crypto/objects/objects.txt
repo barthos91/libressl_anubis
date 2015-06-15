@@ -1327,7 +1327,7 @@ brainpool 1 14 : brainpoolP512t1
 
 
 
-                 : ANUBIS-128-CBC         : anubis-128-cbc
+                : ANUBIS-128-CBC         : anubis-128-cbc
                 : ANUBIS-160-CBC         : anubis-160-cbc
                 : ANUBIS-192-CBC         : anubis-192-cbc 
                 : ANUBIS-224-CBC         : anubis-224-cbc 
