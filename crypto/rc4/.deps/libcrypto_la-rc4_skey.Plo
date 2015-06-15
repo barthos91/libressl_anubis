@@ -1,7 +1,7 @@
 rc4/libcrypto_la-rc4_skey.lo: rc4/rc4_skey.c /usr/include/stdc-predef.h \
  ../include/openssl/rc4.h ../include/openssl/opensslconf.h \
  ../include/openssl/opensslfeatures.h \
- /usr/lib/gcc/i686-linux-gnu/4.8/include/stddef.h rc4/rc4_locl.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h rc4/rc4_locl.h \
  ../include/openssl/opensslv.h
 
 /usr/include/stdc-predef.h:
@@ -12,7 +12,7 @@ rc4/libcrypto_la-rc4_skey.lo: rc4/rc4_skey.c /usr/include/stdc-predef.h \
 
 ../include/openssl/opensslfeatures.h:
 
-/usr/lib/gcc/i686-linux-gnu/4.8/include/stddef.h:
+/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h:
 
 rc4/rc4_locl.h:
 

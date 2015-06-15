@@ -104,6 +104,9 @@
 #ifndef OPENSSL_NO_AES
 #include <openssl/aes.h>
 #endif
+#ifndef OPENSSL_NO_ANUBIS
+#include <openssl/anubis.h>
+#endif
 #ifndef OPENSSL_NO_BF
 #include <openssl/blowfish.h>
 #endif
@@ -171,7 +174,7 @@ pkey_print_message(const char *str, const char *str2,
 static void print_result(int alg, int run_no, int count, double time_used);
 static int do_multi(int multi);
 
-#define ALGOR_NUM	30
+#define ALGOR_NUM	37
 #define SIZE_NUM	5
 #define RSA_NUM		4
 #define DSA_NUM		3
@@ -186,7 +189,9 @@ static const char *names[ALGOR_NUM] = {
 	"aes-128 cbc", "aes-192 cbc", "aes-256 cbc",
 	"camellia-128 cbc", "camellia-192 cbc", "camellia-256 cbc",
 	"evp", "sha256", "sha512", "whirlpool",
-"aes-128 ige", "aes-192 ige", "aes-256 ige", "ghash"};
+"aes-128 ige", "aes-192 ige", "aes-256 ige", "ghash",
+	"anubis-128 cbc", "anubis-160 cbc", "anubis-192 cbc", "anubis-224 cbc",
+	"anubis-256 cbc", "anubis-288 cbc",  "anubis-320 cbc"/* a rajouter */};
 static double results[ALGOR_NUM][SIZE_NUM];
 static int lengths[SIZE_NUM] = {16, 64, 256, 1024, 8 * 1024};
 static double rsa_results[RSA_NUM][2];
@@ -299,6 +304,26 @@ speed_main(int argc, char **argv)
 		0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34,
 	0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34, 0x56};
 #endif
+#ifndef OPENSSL_NO_ANUBIS
+	static const unsigned char akey20[24] =
+	{0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
+		0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12,
+		0x56, 0x78, 0x9a, 0xbc};
+	static const unsigned char akey24[24] =
+	{0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
+		0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12,
+		0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34};
+	static const unsigned char akey28[28] =
+	{0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
+		0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12,
+		0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34,
+		0x56, 0x78, 0x9a, 0xbc};
+	static const unsigned char akey32[32] =
+	{0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
+		0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12,
+		0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34,
+		0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34, 0x56};
+#endif
 #ifndef OPENSSL_NO_CAMELLIA
 	static const unsigned char ckey24[24] =
 	{0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
@@ -311,6 +336,9 @@ speed_main(int argc, char **argv)
 	0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34, 0x56};
 #endif
 #ifndef OPENSSL_NO_AES
+#define MAX_BLOCK_SIZE 128
+#endif
+#ifndef OPENSSL_NO_ANUBIS
 #define MAX_BLOCK_SIZE 128
 #else
 #define MAX_BLOCK_SIZE 64
@@ -327,6 +355,9 @@ speed_main(int argc, char **argv)
 #endif
 #ifndef OPENSSL_NO_AES
 	AES_KEY aes_ks1, aes_ks2, aes_ks3;
+#endif
+#ifndef OPENSSL_NO_ANUBIS
+	NESSIEstruct anubis_ks1, anubis_ks2, anubis_ks3, anubis_ks4, anubis_ks5;
 #endif
 #ifndef OPENSSL_NO_CAMELLIA
 	CAMELLIA_KEY camellia_ks1, camellia_ks2, camellia_ks3;
@@ -361,6 +392,11 @@ speed_main(int argc, char **argv)
 #define D_IGE_192_AES   27
 #define D_IGE_256_AES   28
 #define D_GHASH		29
+#define D_CBC_128_ANUBIS   30
+#define D_CBC_160_ANUBIS   31
+#define D_CBC_192_ANUBIS   32
+#define D_CBC_224_ANUBIS   33
+#define D_CBC_256_ANUBIS   34
 	double d = 0.0;
 	long c[ALGOR_NUM][SIZE_NUM];
 #define	R_DSA_512	0
@@ -669,6 +705,19 @@ speed_main(int argc, char **argv)
 			doit[D_IGE_256_AES] = 1;
 		else
 #endif
+#ifndef OPENSSL_NO_ANUBIS
+		if (strcmp(*argv, "anubis-128-cbc") == 0)
+			doit[D_CBC_128_ANUBIS] = 1;
+		if (strcmp(*argv, "anubis-160-cbc") == 0)
+			doit[D_CBC_160_ANUBIS] = 1;
+		else if (strcmp(*argv, "anubis-192-cbc") == 0)
+			doit[D_CBC_192_ANUBIS] = 1;
+		else if (strcmp(*argv, "anubis-224-cbc") == 0)
+			doit[D_CBC_224_ANUBIS] = 1;
+		else if (strcmp(*argv, "anubis-256-cbc") == 0)
+			doit[D_CBC_256_ANUBIS] = 1;
+		else
+#endif
 #ifndef OPENSSL_NO_CAMELLIA
 		if (strcmp(*argv, "camellia-128-cbc") == 0)
 			doit[D_CBC_128_CML] = 1;
@@ -757,6 +806,15 @@ speed_main(int argc, char **argv)
 			doit[D_CBC_256_AES] = 1;
 		} else if (strcmp(*argv, "ghash") == 0) {
 			doit[D_GHASH] = 1;
+		} else
+#endif
+#ifndef OPENSSL_NO_ANUBIS
+		if (strcmp(*argv, "anubis") == 0) {
+			doit[D_CBC_128_ANUBIS] = 1;
+			doit[D_CBC_160_ANUBIS] = 1;
+			doit[D_CBC_192_ANUBIS] = 1;
+			doit[D_CBC_224_ANUBIS] = 1;
+			doit[D_CBC_256_ANUBIS] = 1;
 		} else
 #endif
 #ifndef OPENSSL_NO_CAMELLIA
@@ -910,6 +968,9 @@ speed_main(int argc, char **argv)
 			BIO_printf(bio_err, "aes-128-cbc aes-192-cbc aes-256-cbc ");
 			BIO_printf(bio_err, "aes-128-ige aes-192-ige aes-256-ige ");
 #endif
+#ifndef OPENSSL_NO_ANUBIS
+			BIO_printf(bio_err, "anubis-128-cbc anubis-160-cbc anubis-192-cbc anubis-224-cbc anubis-256-cbc ");
+#endif
 #ifndef OPENSSL_NO_CAMELLIA
 			BIO_printf(bio_err, "\n");
 			BIO_printf(bio_err, "camellia-128-cbc camellia-192-cbc camellia-256-cbc ");
@@ -942,6 +1003,9 @@ speed_main(int argc, char **argv)
 #endif
 #ifndef OPENSSL_NO_AES
 			BIO_printf(bio_err, "aes      ");
+#endif  
+#ifndef OPENSSL_NO_ANUBIS
+			BIO_printf(bio_err, "anubis   ");
 #endif
 #ifndef OPENSSL_NO_CAMELLIA
 			BIO_printf(bio_err, "camellia ");
@@ -953,7 +1017,8 @@ speed_main(int argc, char **argv)
 #if !defined(OPENSSL_NO_IDEA) || !defined(OPENSSL_NO_SEED) || \
     !defined(OPENSSL_NO_RC2) || !defined(OPENSSL_NO_DES) || \
     !defined(OPENSSL_NO_RSA) || !defined(OPENSSL_NO_BF) || \
-    !defined(OPENSSL_NO_AES) || !defined(OPENSSL_NO_CAMELLIA)
+    !defined(OPENSSL_NO_AES) || !defined(OPENSSL_NO_CAMELLIA) || \
+    !defined(OPENSSL_NO_ANUBIS)
 			BIO_printf(bio_err, "\n");
 #endif
 
@@ -1033,6 +1098,14 @@ speed_main(int argc, char **argv)
 	AES_set_encrypt_key(key16, 128, &aes_ks1);
 	AES_set_encrypt_key(key24, 192, &aes_ks2);
 	AES_set_encrypt_key(key32, 256, &aes_ks3);
+#endif
+#ifndef OPENSSL_NO_ANUBIS
+	NESSIEkeysetup(key16,128,&anubis_ks1);
+	NESSIEkeysetup(akey20,160,&anubis_ks2);
+	NESSIEkeysetup(akey24,192,&anubis_ks3);
+	NESSIEkeysetup(akey28,224,&anubis_ks4);
+	NESSIEkeysetup(akey32,256,&anubis_ks5);
+	//~ TO DO ??? add other
 #endif
 #ifndef OPENSSL_NO_CAMELLIA
 	Camellia_set_key(key16, 128, &camellia_ks1);
@@ -1310,6 +1383,70 @@ speed_main(int argc, char **argv)
 			print_result(D_GHASH, j, count, d);
 		}
 		CRYPTO_gcm128_release(ctx);
+	}
+#endif
+#ifndef OPENSSL_NO_ANUBIS
+	if (doit[D_CBC_128_ANUBIS]) {
+		for (j = 0; j < SIZE_NUM; j++) {
+			print_message(names[D_CBC_128_ANUBIS], c[D_CBC_128_ANUBIS][j], lengths[j]);
+			Time_F(START);
+			for (count = 0, run = 1; COND(c[D_CBC_128_ANUBIS][j]); count++)
+			{
+				ANUBIS_cbc_encrypt(buf, buf,
+				    (unsigned long) lengths[j], &anubis_ks1,
+				    iv, ANUBIS_ENCRYPT);
+				}
+			d = Time_F(STOP);
+			print_result(D_CBC_128_ANUBIS, j, count, d);
+		}
+	}
+	if (doit[D_CBC_160_ANUBIS]) {
+		for (j = 0; j < SIZE_NUM; j++) {
+			print_message(names[D_CBC_160_ANUBIS], c[D_CBC_160_ANUBIS][j], lengths[j]);
+			Time_F(START);
+			for (count = 0, run = 1; COND(c[D_CBC_160_ANUBIS][j]); count++)
+				ANUBIS_cbc_encrypt(buf, buf,
+				    (unsigned long) lengths[j], &anubis_ks2,
+				     iv, ANUBIS_ENCRYPT);
+			d = Time_F(STOP);
+			print_result(D_CBC_160_ANUBIS, j, count, d);
+		}
+	}
+	if (doit[D_CBC_192_ANUBIS]) {
+		for (j = 0; j < SIZE_NUM; j++) {
+			print_message(names[D_CBC_192_ANUBIS], c[D_CBC_192_ANUBIS][j], lengths[j]);
+			Time_F(START);
+			for (count = 0, run = 1; COND(c[D_CBC_192_ANUBIS][j]); count++)
+				ANUBIS_cbc_encrypt(buf, buf,
+				    (unsigned long) lengths[j], &anubis_ks3,
+				     iv, ANUBIS_ENCRYPT);
+			d = Time_F(STOP);
+			print_result(D_CBC_192_ANUBIS, j, count, d);
+		}
+	}
+	if (doit[D_CBC_224_ANUBIS]) {
+		for (j = 0; j < SIZE_NUM; j++) {
+			print_message(names[D_CBC_224_ANUBIS], c[D_CBC_224_ANUBIS][j], lengths[j]);
+			Time_F(START);
+			for (count = 0, run = 1; COND(c[D_CBC_224_ANUBIS][j]); count++)
+				ANUBIS_cbc_encrypt(buf, buf,
+				    (unsigned long) lengths[j], &anubis_ks4,
+				    iv, ANUBIS_ENCRYPT);
+			d = Time_F(STOP);
+			print_result(D_CBC_224_ANUBIS, j, count, d);
+		}
+	}
+	if (doit[D_CBC_256_ANUBIS]) {
+		for (j = 0; j < SIZE_NUM; j++) {
+			print_message(names[D_CBC_256_ANUBIS], c[D_CBC_256_ANUBIS][j], lengths[j]);
+			Time_F(START);
+			for (count = 0, run = 1; COND(c[D_CBC_256_ANUBIS][j]); count++)
+				ANUBIS_cbc_encrypt(buf, buf,
+				    (unsigned long) lengths[j], &anubis_ks5,
+				    iv, ANUBIS_ENCRYPT);
+			d = Time_F(STOP);
+			print_result(D_CBC_256_ANUBIS, j, count, d);
+		}
 	}
 #endif
 #ifndef OPENSSL_NO_CAMELLIA
@@ -1801,6 +1938,9 @@ show_res:
 #endif
 #ifndef OPENSSL_NO_AES
 		printf("%s ", AES_options());
+#endif
+#ifndef OPENSSL_NO_ANUBIS
+//		printf("%s ", ANUBIS_options()); //TO DO
 #endif
 #ifndef OPENSSL_NO_IDEA
 		printf("%s ", idea_options());

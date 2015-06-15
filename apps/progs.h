@@ -156,6 +156,15 @@ FUNCTION functions[] = {
 	{ FUNC_TYPE_CIPHER, "aes-256-cbc", enc_main },
 	{ FUNC_TYPE_CIPHER, "aes-256-ecb", enc_main },
 #endif
+#ifndef OPENSSL_NO_ANUBIS
+	{ FUNC_TYPE_CIPHER, "anubis-128-cbc", enc_main },
+	{ FUNC_TYPE_CIPHER, "anubis-160-cbc", enc_main },
+	{ FUNC_TYPE_CIPHER, "anubis-192-cbc", enc_main },
+	{ FUNC_TYPE_CIPHER, "anubis-224-cbc", enc_main },
+	{ FUNC_TYPE_CIPHER, "anubis-256-cbc", enc_main },
+	{ FUNC_TYPE_CIPHER, "anubis-288-cbc", enc_main },
+	{ FUNC_TYPE_CIPHER, "anubis-320-cbc", enc_main },
+#endif
 #ifndef OPENSSL_NO_BF
 	{ FUNC_TYPE_CIPHER, "bf", enc_main },
 	{ FUNC_TYPE_CIPHER, "bf-cbc", enc_main },

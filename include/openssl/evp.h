@@ -738,6 +738,15 @@ const EVP_CIPHER *EVP_rc5_32_12_16_cfb64(void);
 # define EVP_rc5_32_12_16_cfb EVP_rc5_32_12_16_cfb64
 const EVP_CIPHER *EVP_rc5_32_12_16_ofb(void);
 #endif
+#ifndef OPENSSL_NO_ANUBIS
+const EVP_CIPHER *EVP_anubis_128_cbc(void);
+const EVP_CIPHER *EVP_anubis_160_cbc(void);
+const EVP_CIPHER *EVP_anubis_192_cbc(void);
+const EVP_CIPHER *EVP_anubis_224_cbc(void);
+const EVP_CIPHER *EVP_anubis_256_cbc(void);
+const EVP_CIPHER *EVP_anubis_288_cbc(void);
+const EVP_CIPHER *EVP_anubis_320_cbc(void);
+#endif
 #ifndef OPENSSL_NO_AES
 const EVP_CIPHER *EVP_aes_128_ecb(void);
 const EVP_CIPHER *EVP_aes_128_cbc(void);

@@ -222,6 +222,16 @@ OpenSSL_add_all_ciphers(void)
 	EVP_add_cipher_alias(SN_camellia_256_cbc, "camellia256");
 #endif
 
+#ifndef OPENSSL_NO_ANUBIS
+	EVP_add_cipher(EVP_anubis_128_cbc());
+	EVP_add_cipher(EVP_anubis_160_cbc());
+	EVP_add_cipher(EVP_anubis_192_cbc());
+	EVP_add_cipher(EVP_anubis_224_cbc());
+	EVP_add_cipher(EVP_anubis_256_cbc());	
+	EVP_add_cipher(EVP_anubis_288_cbc());
+	EVP_add_cipher(EVP_anubis_320_cbc());
+#endif
+
 #ifndef OPENSSL_NO_CHACHA
 	EVP_add_cipher(EVP_chacha20());
 #endif
